@@ -1,6 +1,6 @@
 # 📚 Table of Contents
 
-- [🕵️‍♂️ Threat Hunt: "❌ Crosscheck"](##-🕵️‍♂️-threat-hunt-deep-access-–-the-adversary)
+- [🕵️‍♂️ Threat Hunt: "❌ Crosscheck"](##-🕵️‍♂️-❌ Crosscheck)
 - [🧰 Platforms and Tools](#-platforms-and-tools)
 - [🔍 Summary of Findings (Flags)](#-summary-of-findings-flags)
   - [🏁 Flag 0: Starting Point – Entry Device Identification](#-flag-0-starting-point--entry-device-identification)
@@ -29,7 +29,7 @@
 
 ---
 
-# 🕵️‍♂️ Threat Hunt: *"Deep Access – The Adversary"*
+# 🕵️‍♂️ Threat Hunt: *"❌ Crosscheck"*
 
 > *"Not all breaches sound alarms. Some whisper their presence, slipping through telemetry and leaving behind only the faintest trace. Our job: amplify the signal."*
 
