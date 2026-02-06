@@ -463,6 +463,245 @@ Question: Confirm whether an outbound connection was attempted and identify the 
 </details>
 
 ---
+
+### 🚩 16. Local Log Clearing Attempt Evidence
+
+Objective: 
+Identify command-line evidence of attempted local log clearing.
+
+What to Hunt: 
+Process creation for system utilities associated with clearing logs and capture the exact command line used.
+
+```kql
+DeviceProcessEvents
+| where DeviceName == "sys1-dept"
+| where TimeGenerated >=(datetime(2025-12-03))
+| where FileName in ("wevtutil.exe","powershell.exe","cmd.exe")
+| where ProcessCommandLine contains "cl"
+   or ProcessCommandLine contains "clear"
+| project TimeGenerated,
+          FileName,
+          ProcessCommandLine,
+          AccountName,
+          InitiatingProcessFileName,
+          InitiatingProcessRemoteSessionDeviceName,
+          InitiatingProcessRemoteSessionIP
+| order by TimeGenerated asc
+```
+<img width="354" height="103" alt="image" src="https://github.com/user-attachments/assets/a8398f71-0257-44a2-9605-78c319488782" />
+
+Question: Confirm whether an outbound connection was attempted and identify the timestamp
+
+<details>
+<summary>Click to see answer</summary>
+  
+  Answer: `"wevtutil.exe" cl Microsoft-Windows-PowerShell/Operational`
+</details>
+
+---
+
+### 🚩 17. Outbound Transfer Attempt Timestamp
+
+Objective: 
+Confirm an outbound transfer attempt occurred after staging activity.
+
+What to Hunt: 
+Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+
+```kql
+    //Looking for "explanatory" file creation. 
+DeviceFileEvents
+    //Time should be immediately after creating the scheduler event
+| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
+    //suspicious machine
+| where DeviceName == "gab-intern-vm"
+| order by TimeGenerated asc
+```
+<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+
+Question: Confirm whether an outbound connection was attempted and identify the timestamp
+
+<details>
+<summary>Click to see answer</summary>
+  
+  Answer: `2025-12-03T07:26:28.5959592Z`
+</details>
+
+---
+
+### 🚩 18. Outbound Transfer Attempt Timestamp
+
+Objective: 
+Confirm an outbound transfer attempt occurred after staging activity.
+
+What to Hunt: 
+Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+
+```kql
+    //Looking for "explanatory" file creation. 
+DeviceFileEvents
+    //Time should be immediately after creating the scheduler event
+| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
+    //suspicious machine
+| where DeviceName == "gab-intern-vm"
+| order by TimeGenerated asc
+```
+<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+
+Question: Confirm whether an outbound connection was attempted and identify the timestamp
+
+<details>
+<summary>Click to see answer</summary>
+  
+  Answer: `2025-12-03T07:26:28.5959592Z`
+</details>
+
+---
+
+### 🚩 19. Outbound Transfer Attempt Timestamp
+
+Objective: 
+Confirm an outbound transfer attempt occurred after staging activity.
+
+What to Hunt: 
+Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+
+```kql
+    //Looking for "explanatory" file creation. 
+DeviceFileEvents
+    //Time should be immediately after creating the scheduler event
+| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
+    //suspicious machine
+| where DeviceName == "gab-intern-vm"
+| order by TimeGenerated asc
+```
+<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+
+Question: Confirm whether an outbound connection was attempted and identify the timestamp
+
+<details>
+<summary>Click to see answer</summary>
+  
+  Answer: `2025-12-03T07:26:28.5959592Z`
+</details>
+
+---
+
+### 🚩 20. Outbound Transfer Attempt Timestamp
+
+Objective: 
+Confirm an outbound transfer attempt occurred after staging activity.
+
+What to Hunt: 
+Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+
+```kql
+    //Looking for "explanatory" file creation. 
+DeviceFileEvents
+    //Time should be immediately after creating the scheduler event
+| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
+    //suspicious machine
+| where DeviceName == "gab-intern-vm"
+| order by TimeGenerated asc
+```
+<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+
+Question: Confirm whether an outbound connection was attempted and identify the timestamp
+
+<details>
+<summary>Click to see answer</summary>
+  
+  Answer: `2025-12-03T07:26:28.5959592Z`
+</details>
+
+---
+
+### 🚩 21. Outbound Transfer Attempt Timestamp
+
+Objective: 
+Confirm an outbound transfer attempt occurred after staging activity.
+
+What to Hunt: 
+Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+
+```kql
+    //Looking for "explanatory" file creation. 
+DeviceFileEvents
+    //Time should be immediately after creating the scheduler event
+| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
+    //suspicious machine
+| where DeviceName == "gab-intern-vm"
+| order by TimeGenerated asc
+```
+<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+
+Question: Confirm whether an outbound connection was attempted and identify the timestamp
+
+<details>
+<summary>Click to see answer</summary>
+  
+  Answer: `2025-12-03T07:26:28.5959592Z`
+</details>
+
+---
+
+### 🚩 22. Outbound Transfer Attempt Timestamp
+
+Objective: 
+Confirm an outbound transfer attempt occurred after staging activity.
+
+What to Hunt: 
+Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+
+```kql
+    //Looking for "explanatory" file creation. 
+DeviceFileEvents
+    //Time should be immediately after creating the scheduler event
+| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
+    //suspicious machine
+| where DeviceName == "gab-intern-vm"
+| order by TimeGenerated asc
+```
+<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+
+Question: Confirm whether an outbound connection was attempted and identify the timestamp
+
+<details>
+<summary>Click to see answer</summary>
+  
+  Answer: `2025-12-03T07:26:28.5959592Z`
+</details>
+
+---
+
+### 🚩 15. Outbound Transfer Attempt Timestamp
+
+Objective: 
+Confirm an outbound transfer attempt occurred after staging activity.
+
+What to Hunt: 
+Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+
+```kql
+    //Looking for "explanatory" file creation. 
+DeviceFileEvents
+    //Time should be immediately after creating the scheduler event
+| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
+    //suspicious machine
+| where DeviceName == "gab-intern-vm"
+| order by TimeGenerated asc
+```
+<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+
+Question: Confirm whether an outbound connection was attempted and identify the timestamp
+
+<details>
+<summary>Click to see answer</summary>
+  
+  Answer: `2025-12-03T07:26:28.5959592Z`
+</details>
+
+---
 ## Summary Table
 
 | Flag | Description                        | Value |
