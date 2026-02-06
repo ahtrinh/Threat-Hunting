@@ -235,16 +235,36 @@ Question: When was the first outbound connection attempt initiated?
 
 ---
 
-### 🚩 8. Runtime Application Inventory
+### 🚩 8. Registry-Based Persistence
 
-Once the actor knows the current session state, they can look for running applications and services to inform them of any risks or opportunities. We need to look for any events that queries running services.
+Objective: 
+Identify evidence of persistence established via a user Run key.
 
-Question: Provide the file name of the process that best demonstrates a runtime process enumeration event on the target host.
+What to Hunt: 
+Registry modifications under the standard user Run path that indicate an auto-start execution mechanism.
+
+```kql
+DeviceRegistryEvents
+| where DeviceName == "sys1-dept"
+| where TimeGenerated >= datetime(2025-12-03)
+| where RegistryKey has @"\Software\Microsoft\Windows\CurrentVersion\Run"
+| where RegistryKey startswith "HKEY_CURRENT_USER"
+| where ActionType in ("RegistryValueSet","RegistryValueModified")
+| project Timestamp,
+          RegistryKey,
+          RegistryValueName,
+          RegistryValueData,
+          InitiatingProcessAccountName
+| order by Timestamp asc
+```
+<img width="827" height="114" alt="image" src="https://github.com/user-attachments/assets/cbd38562-6d9c-4622-bce8-1f3d15386432" />
+
+Question: Provide the associated RegistryKey value
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `tasklist.exe`
+  Answer: `HKEY_CURRENT_USER\S-1-5-21-805396643-3920266184-3816603331-500\SOFTWARE\Microsoft\Windows\CurrentVersion\Run`
 </details>
 
 ---
