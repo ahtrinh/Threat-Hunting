@@ -359,30 +359,31 @@ Question: Identify the other remote session department that attempted to access 
 
 ---
 
-### 🚩 12. Outbound Transfer Attempt (Simulated)
+### 🚩 12. Performance Review Access Validation
 
-Since the artifacts have been consolidated, we can assume the actor will attempt to move the data off host. We need to check for any network events that would suggest that. We will look for any unusual outbound connections.
+Objective: 
+Confirm access to employee performance review material through user-level tooling.
+
+What to Hunt: 
+Process telemetry showing access to the performance review directory and correlate repeated access behavior across departments/sessions.
 
 ```kql
-   //Looking for network event indicating outbound transfers
-DeviceNetworkEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-09) .. datetime(2025-10-16))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //Executable file responsible for launching the current process
-| where InitiatingProcessParentFileName contains "runtimebroker.exe"
-| project TimeGenerated, DeviceName, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessParentFileName
-| order by TimeGenerated desc
+DeviceProcessEvents
+| where DeviceName == "sys1-dept"
+| where InitiatingProcessAccountName == "5y51-d3p7"
+| where TimeGenerated >= datetime(2025-12-01)
+| where ProcessCommandLine contains "performancereview"
+| where InitiatingProcessFileName has_any ("")
+|project TimeGenerated, FolderPath, InitiatingProcessAccountName, InitiatingProcessCommandLine, ProcessCommandLine, FileName, InitiatingProcessFileName, ProcessRemoteSessionIP, InitiatingProcessRemoteSessionIP
 ```
-<img width="1842" height="510" alt="image" src="https://github.com/user-attachments/assets/e5849d93-159a-43ff-a22e-760c2ee1ee49" />
+<img width="1207" height="104" alt="image" src="https://github.com/user-attachments/assets/3b8efdde-c6be-4f35-a265-32b4627906ca" />
 
-Question: Provide the IP of the last unusual outbound connection.
+Question: Identify the timestamp of a process that points to an access of a similar employee related file
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `100.29.147.161`
+  Answer: `2025-12-03T07:25:15.6288106Z`
 </details>
 
 ---
