@@ -23,32 +23,11 @@ Participants must correlate endpoint telemetry across multiple user contexts and
 
 ---
 
-## Starting Point
+### 🚩 1. Initial Endpoint Association
 
 To establish a reliable starting point, we first need to identify where anomalous behavior begins. Based on the scenario context, suspicious activity is expected to occur during early December, coinciding with year-end compensation and performance review workflows.
 
 To anchor the investigation, we begin by examining process execution telemetry on employee-facing systems. By reviewing DeviceProcessEvents, we can identify abnormal script execution activity that may indicate unauthorized access or tooling usage.
-DeviceProcessEvents
-| where TimeGenerated between (datetime(2025-12-01) .. datetime(2025-12-08))
-| where FileName contains "powershell"
-| project TimeGenerated, DeviceName, AccountName, ProcessCommandLine
-| order by TimeGenerated asc
-```
-<img width="630" height="104" alt="Screenshot 2026-02-05 at 10 41 20 PM" src="https://github.com/user-attachments/assets/dbcee4f1-4808-47cd-a435-87b5458badcb" />
-
-Question: Identify the most suspicious machine based on the given conditions
-
-<details>
-<summary>Click to see answer</summary>
-  
-  Answer: `sys1-dept`
-</details>
-c
----
-
-### 🚩 1. Initial Execution Detection
-
-Since we have established the most suspicious machine, we need to detect the earliest time it executed unusual code. Again, we use `DeviceProcessEvents` to discover that. This helps us anchor the timeline and follow the parent/child chain.
 
 ```kql
 DeviceProcessEvents
