@@ -435,9 +435,13 @@ Question: Which directory was the .zip file dropped into? Insert the complete fi
 </details>
 ---
 
-### 🚩 15. Planted Narrative / Cover Artifact
+### 🚩 15. Outbound Transfer Attempt Timestamp
 
-This all started out as a routine support ticket. The actor wouldnt just leave without justifying the activity. We need to look for any creation of explanatory files around the time of the suspicious operations, as this file would be used as a classic misdirection.
+Objective: 
+Confirm an outbound transfer attempt occurred after staging activity.
+
+What to Hunt: 
+Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
 
 ```kql
     //Looking for "explanatory" file creation. 
@@ -448,14 +452,14 @@ DeviceFileEvents
 | where DeviceName == "gab-intern-vm"
 | order by TimeGenerated asc
 ```
-<img width="1831" height="607" alt="image" src="https://github.com/user-attachments/assets/718cf402-0b2f-43ca-a85a-ce5c69dc9dfb" />
+<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
 
-Question: Identify the file name of the artifact left behind.
+Question: Confirm whether an outbound connection was attempted and identify the timestamp
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `SupportChat_log.lnk`
+  Answer: `2025-12-03T07:26:28.5959592Z`
 </details>
 
 ---
