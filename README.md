@@ -24,9 +24,11 @@ Participants must correlate endpoint telemetry across multiple user contexts and
 
 ### 🚩 1. Initial Execution Detection
 
-To establish a reliable starting point, we first need to identify where anomalous behavior begins. Based on the scenario context, suspicious activity is expected to occur during early December, coinciding with year-end compensation and performance review workflows.
+Objective: 
+Determine which endpoint first shows activity tied to the user context involved in the chain.
 
-To anchor the investigation, we begin by examining process execution telemetry on employee-facing systems. By reviewing DeviceProcessEvents, we can identify abnormal script execution activity that may indicate unauthorized access or tooling usage.
+What to Hunt: 
+Process telemetry where a specific local account is observed. Use this to identify the associated device.
 
 ```kql
 DeviceProcessEvents
@@ -49,9 +51,11 @@ Question :Identify the DeviceName in question
 
 ### 🚩 2. Remote Session Source Attribution
 
-After identifying the first endpoint exhibiting suspicious activity, the next step is to determine where the access originated from. Establishing the remote session source helps attribute the activity to a specific access path and confirms whether the behavior was driven locally or remotely.
+Objective: 
+Identify the remote session source information tied to the initiating access on the first endpoint.
 
-To do this, we examine network telemetry for the affected endpoint and focus on remote session metadata. By reviewing DeviceNetworkEvents, we can identify successful connections where a remote session IP is present, allowing us to pinpoint the source address responsible for the initiating access.
+What to Hunt: 
+Remote session metadata (source IP) for the remote session device involved in early activity on the first system.
 
 ```kql
 DeviceNetworkEvents
@@ -80,9 +84,11 @@ Question: Provide the IP of the remote session accessing the system
 
 ### 🚩 3. Support Script Execution Confirmation
 
-After confirming the remote session source tied to activity on the first endpoint, the next step is to validate whether the actor executed a support-themed PowerShell script from a user-accessible location. Scripts launched from user profile paths (especially `Downloads`) are a common indicator of hands-on execution versus standard administrative tooling.
+Objective: 
+Confirm execution of a support-themed PowerShell script from a user-accessible directory.
 
-To confirm this, we review `DeviceProcessEvents` for PowerShell process creation and look for command lines that reference a script (`-File`) executed from the user profile directory.
+What to Hunt: 
+PowerShell process creation referencing execution of a script located under the user profile (commonly Downloads).
 
 ```kql
 DeviceProcessEvents
@@ -111,9 +117,11 @@ Question: What was the command used to execute the program?
 
 ### 🚩 4. System Reconnaissance Initiation
 
-Once PowerShell execution is confirmed, the next step is to identify the first reconnaissance action used to gather host and user context. Early recon activity typically includes basic identity enumeration, session checks, and process discovery to understand the environment before accessing sensitive data.
+Objective: 
+Identify the first reconnaissance action used to gather host and user context.
 
-To detect this, we review `DeviceProcessEvents` on the initial endpoint and search for execution of common recon utilities and command patterns associated with identity and session enumeration.
+What to Hunt: 
+Execution of common reconnaissance utilities and command patterns used to enumerate identity, sessions, and active processes.
 
 ```kql
 DeviceProcessEvents
@@ -141,7 +149,11 @@ Question: Identify the first recon command attempted
 
 ### 🚩 5. Sensitive Bonus-Related File Exposure
 
-After using `qwinsta`, let's check if the actor discovered any storage locations. After recon, we can expect lightweight checks of available storage and even enumeration of filesystems or share surfaces.
+Objective: 
+Identify the first sensitive year-end bonus-related file that was accessed during exploration.
+
+What to Hunt: 
+Process activity indicating discovery behavior around bonus-related content, and confirm which sensitive file is involved.
 
 ```kql
 DeviceProcessEvents
@@ -165,33 +177,29 @@ Question: Which sensitive file was likely targeted by actor(s)?
 
 ### 🚩 6. Connectivity & Name Resolution Check
 
-Since we confirmed that the actor discovered storage locations, we need to identify checks that validate network reachability. Are there network events or process events that indicate outward connectivity probes? We need to confirm egress before attempting to move data off host. We will use `DeviceProcessEvents` to look for any actions that resemble network probing.
+Objective: 
+Confirm that sensitive data was prepared for movement by staging into an export/archive output.
+
+What to Hunt: 
+File creation activity consistent with archived/exported content and extract the initiating process identifier.
 
 ```kql
-   //looking for checks on the network and name resolution
-DeviceProcessEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-15))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-| where ProcessCommandLine has_any ("ping", "nslookup", "curl", "Test-NetConnection", "tracert")
-    //action taken for checks
-| where FileName contains "powershell" or FileName contains "cmd"
-    //validate Network reachability
-| where ProcessCommandLine has_any ("ping", "tracert", "nslookup")
-    //hint offered
-| where IsProcessRemoteSession == "true"
-| project TimeGenerated, DeviceName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessParentFileName, IsProcessRemoteSession
-| order by TimeGenerated asc
+DeviceFileEvents
+| where Timestamp >= datetime(2025-12-03)
+| where DeviceName == "sys1-dept"
+| where InitiatingProcessAccountName == "5y51-d3p7"
+| where FileName has_any ("export", "archive")
+| project Timestamp, DeviceName, InitiatingProcessAccountName, InitiatingProcessUniqueId, FileName, FolderPath, ActionType, InitiatingProcessFileName
+| order by Timestamp asc
 ```
 <img width="1829" height="562" alt="image" src="https://github.com/user-attachments/assets/f7541770-2420-4a03-9280-536f5a41667a" />
 
-Question: Provide the File Name of the initiating parent process.
+Question: Identify the ID of the initiating unique process
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `RuntimeBroker.exe`
+  Answer: `2533274790396713`
 </details>
 
 ---
