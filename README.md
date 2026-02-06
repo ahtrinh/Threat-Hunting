@@ -109,7 +109,7 @@ Question: What was the command used to execute the program?
 
 ---
 
-### 🚩 4. Host Context Recon
+### 🚩 4. System Reconnaissance Initiation
 
 Once PowerShell execution is confirmed, the next step is to identify the first reconnaissance action used to gather host and user context. Early recon activity typically includes basic identity enumeration, session checks, and process discovery to understand the environment before accessing sensitive data.
 
@@ -139,30 +139,26 @@ Question: Identify the first recon command attempted
 
 ---
 
-### 🚩 5. Storage Surface Mapping
+### 🚩 5. Sensitive Bonus-Related File Exposure
 
 After using `qwinsta`, let's check if the actor discovered any storage locations. After recon, we can expect lightweight checks of available storage and even enumeration of filesystems or share surfaces.
 
 ```kql
-   //looking for discovery of storage, looking for chekcs of available storage
 DeviceProcessEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-15))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //look for filesystem/share surface enumeration, lightweight storage checks
-| where tolower(ProcessCommandLine) has_any ("net share", "net view", "dir /s", "Get-Volume", "Get-SmbShare", "wmic", "fsutil fsinfo drives", "Get-CimInstance -ClassName Win32_LogicalDisk")
-| project TimeGenerated, DeviceName, AccountName, FolderPath, ProcessCommandLine
-| order by TimeGenerated asc
+| where InitiatingProcessAccountName == "5y51-d3p7"
+| where Timestamp >= datetime(2025-12-01)
+| where ProcessCommandLine contains "bonus"
+| project Timestamp, InitiatingProcessAccountName, FileName, ProcessCommandLine
+| order by Timestamp asc
 ```
-<img width="1835" height="481" alt="image" src="https://github.com/user-attachments/assets/0a3f932a-f744-48f2-9205-40851e317dad" />
+<img width="822" height="125" alt="image" src="https://github.com/user-attachments/assets/97831cd4-05e6-4fad-a6e6-78c9392281d9" />
 
-Question: Provide the 2nd command tied to this activity.
+Question: Which sensitive file was likely targeted by actor(s)?
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `"cmd.exe" /c wmic logicaldisk get name,freespace,size`
+  Answer: `BonusMatrix_Draft_v3.xlsx`
 </details>
 
 ---
