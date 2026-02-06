@@ -622,31 +622,36 @@ Question: Provide the whole path containing the archived file
 
 ---
 
-### 🚩 21. Outbound Transfer Attempt Timestamp
+### 🚩 21. Staging Activity Timing on Second Endpoint
 
 Objective: 
-Confirm an outbound transfer attempt occurred after staging activity.
+Determine when staging activity occurred during the final phase on the second endpoint.
 
 What to Hunt: 
-Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+Timestamp of file events within the staging/internal reference directory scope.
 
 ```kql
-    //Looking for "explanatory" file creation. 
 DeviceFileEvents
-    //Time should be immediately after creating the scheduler event
-| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
+| where DeviceName == "main1-srvr"
+| where TimeGenerated >=(datetime(2025-12-03))
+| where FileName != "VMAgentLogs.zip"
+| where FolderPath contains "Internal"
+| where FileName endswith ".zip"
+   or FileName endswith ".7z"
+   or FileName endswith ".rar"
+   or FileName endswith ".tar"
+   or FileName endswith ".gz"
+| project TimeGenerated, ActionType, FileName, FolderPath
 | order by TimeGenerated asc
 ```
-<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+<img width="425" height="82" alt="image" src="https://github.com/user-attachments/assets/9676c1f1-ccc8-48e1-a9c7-e64e752032a0" />
 
-Question: Confirm whether an outbound connection was attempted and identify the timestamp
+Question: Now provide the timestamp when the staging activity occurred
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `2025-12-03T07:26:28.5959592Z`
+  Answer: `2025-12-04T03:15:29.2597235Z`
 </details>
 
 ---
