@@ -388,30 +388,30 @@ Question: Identify the timestamp of a process that points to an access of a simi
 
 ---
 
-### 🚩 13. Scheduled Re-Execution Persistence
+### 🚩 13. Approved/Final Bonus Artifact Access
 
-We need to also detect any creation of persistence. Did the actor create anything that may run again on a schedule or a signin. Any sort of re-execution mechanism is an actors way of surviving past a single session.
+Objective: 
+Confirm access to a finalized year-end bonus artifact with sensitive-read classification.
+
+What to Hunt: 
+Events indicating sensitive reads tied to the remote session context responsible for the approved file access.
 
 ```kql
-   //looking for creation of scheduler-related events
-DeviceProcessEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-15))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //Executable file responsible for launching the current process
-| where InitiatingProcessParentFileName contains "runtimebroker.exe"
-| project TimeGenerated, DeviceName, FileName, FolderPath, ProcessCommandLine
-| order by TimeGenerated desc
+DeviceEvents
+| where DeviceName == "sys1-dept"
+| where InitiatingProcessAccountName == "5y51-d3p7"
+| where TimeGenerated >=(datetime(2025-12-03))
+| where FileName contains "bonus"
+| where ActionType == "SensitiveFileRead"
 ```
-<img width="1834" height="511" alt="image" src="https://github.com/user-attachments/assets/0f03dd2d-dd50-45dd-8877-228aa83f297a" />
+<img width="758" height="34" alt="image" src="https://github.com/user-attachments/assets/973cf657-156a-46aa-b7d7-1316eabb084d" />
 
-Question: Provide the value of the task name down below.
+Question: Identify the timestamp pointing to unauthorized access of a sensitive file
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `SupportToolUpdater`
+  Answer: `2025-12-03T07:25:39.1653621Z`
 </details>
 
 ---
