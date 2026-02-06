@@ -111,29 +111,30 @@ Question: What was the command used to execute the program?
 
 ### 🚩 4. Host Context Recon
 
-After low-effort wins, we can expect the actor to continue to prob and collect information of the environment or account details. At this point, we don't expect them to modify anything yet, so we're just looking for any context-gathering decisions. This is where we expect them to use `qwinsta` command to discover any active user sessions on a system.
+Once PowerShell execution is confirmed, the next step is to identify the first reconnaissance action used to gather host and user context. Early recon activity typically includes basic identity enumeration, session checks, and process discovery to understand the environment before accessing sensitive data.
+
+To detect this, we review `DeviceProcessEvents` on the initial endpoint and search for execution of common recon utilities and command patterns associated with identity and session enumeration.
 
 ```kql
-   //looking for activity/actions
 DeviceProcessEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-15))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //hint offered
-| where ProcessCommandLine contains "qwi"
-| project TimeGenerated, DeviceName, ActionType, FileName, FolderPath, ProcessCommandLine
-| order by TimeGenerated asc
+| where DeviceName == "sys1-dept"
+| where AccountName == "5y51-d3p7"
+| where Timestamp >= datetime(2025-12-01)
+| where InitiatingProcessFileName =~ "powershell.exe"
+| where ProcessCommandLine has_any ("Get-Process", "tasklist", "-ExecutionPolicy Bypass", "Get-LocalUser", "Get-LocalGroup",
+"Get-LocalGroupMember Administrators", "Get-DomainUser","Get-DomainGroup","Get-DomainComputer", "whoami","net user", "Get-LocalUser", "nltest", "query user", "quser")
+| project Timestamp, AccountName, FileName, ProcessCommandLine
+| order by Timestamp asc
 
 ```
-<img width="1835" height="518" alt="image" src="https://github.com/user-attachments/assets/ad98c9f7-ff8c-49a2-b464-2dde764f3afb" />
+<img width="588" height="146" alt="image" src="https://github.com/user-attachments/assets/3a29fa66-742a-41cb-a8da-e8652f2c8d7d" />
 
-Question: Point out when the last recon attempt was.
+Question: Identify the first recon command attempted
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `2025-10-09T12:51:44.3425653Z`
+  Answer: `"whoami.exe" /all`
 </details>
 
 ---
