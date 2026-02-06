@@ -29,7 +29,7 @@ To establish a reliable starting point, we first need to identify where anomalou
 
 To anchor the investigation, we begin by examining process execution telemetry on employee-facing systems. By reviewing DeviceProcessEvents, we can identify abnormal script execution activity that may indicate unauthorized access or tooling usage.
 
-```
+```kql
 DeviceProcessEvents
 | where TimeGenerated between (datetime(2025-12-01) .. datetime(2025-12-08))
 | where FileName contains "powershell"
@@ -38,7 +38,7 @@ DeviceProcessEvents
 ```
 <img width="703" height="114" alt="image" src="https://github.com/user-attachments/assets/f158c734-9590-4f1c-ad4c-b16a813f08db" />
 
-Question: Identify the DeviceName in question 
+Question: Initial Endpoint Association
 
 <details>
 <summary>Click to see answer</summary>
@@ -50,29 +50,30 @@ Question: Identify the DeviceName in question
 
 ### 🚩 2. Defense Disabling
 
-With a suspicious program running on a compromised machine, we'll also need to check if our security posture has changed. Was anything tampered with? Even if failed or simply just an intent, any sort of indicator of activity there still can be a threat. Let's investigate. Again we use `matches regex @"(?i)"` along with the string `tamper` to find any regular, non-case-sensitive expression with the word tamper in it.
+After identifying the first endpoint exhibiting suspicious activity, the next step is to determine where the access originated from. Establishing the remote session source helps attribute the activity to a specific access path and confirms whether the behavior was driven locally or remotely.
+
+To do this, we examine network telemetry for the affected endpoint and focus on remote session metadata. By reviewing DeviceNetworkEvents, we can identify successful connections where a remote session IP is present, allowing us to pinpoint the source address responsible for the initiating access.
 
 ```kql
-//search for artifact creation
-DeviceFileEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-15))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //search for tamper
-| where FileName matches regex @"(?i)(tamper)"
-| project TimeGenerated, DeviceName, ActionType, FileName, FolderPath
+DeviceNetworkEvents
+| where TimeGenerated between (datetime(2025-12-03) .. datetime(2025-12-08))
+| where DeviceName == "sys1-dept"
+| where ActionType == "ConnectionSuccess"
+| where isnotempty(InitiatingProcessRemoteSessionIP)
+| project TimeGenerated, DeviceName,
+          InitiatingProcessAccountName, InitiatingProcessFileName,
+          InitiatingProcessRemoteSessionIP,
+          RemoteIP, RemotePort, InitiatingProcessCommandLine
 | order by TimeGenerated asc
-
 ```
-<img width="1828" height="423" alt="image" src="https://github.com/user-attachments/assets/71e3a830-df5c-4511-a56c-a07ecd9470da" />
+<img width="1876" height="290" alt="image" src="https://github.com/user-attachments/assets/7d91d4df-dd68-40f8-88a3-cb07ff66c92a.png" />
 
-Question: What was the name of the file related to this exploit?
+Question: Provide the IP of the remote session accessing the system
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `DefenderTamperArtifact.lnk`
+  Answer: `192.168.0.110`
 </details>
 
 ---
