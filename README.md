@@ -416,19 +416,22 @@ Question: Identify the timestamp pointing to unauthorized access of a sensitive 
 
 ---
 
-### 🚩 14. Autorun Fallback Persistence
+### 🚩 14. Candidate Archive Creation Location
 
-We also need to investigate any autorun entries placed as backup persistence. Anything that may resemble an autorun stemming from the `InitiatingProcessParentFileName` is an example of redundant persistence. That increases their resilience. We need to check the registry for any modifications.
+Objective: 
+Identify where a suspicious candidate-related archive was created.
 
-<img width="1788" height="478" alt="image" src="https://github.com/user-attachments/assets/29af1c49-1268-4db2-b0b7-cc729f126ea0" />
+What to Hunt: 
+Locate the archive file creation event and extract its folder path.
 
+<img width="572" height="17" alt="image" src="https://github.com/user-attachments/assets/378ff1ca-ebe2-48d6-894c-34aa9d644004" />
 
-Question: What was the name of the registry value?
+Question: Which directory was the .zip file dropped into? Insert the complete file path
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `RemoteAssistUpdater`
+  Answer: `C:\Users\5y51-D3p7\Documents\Q4Candidate_Pack.zip`
 </details>
 ---
 
