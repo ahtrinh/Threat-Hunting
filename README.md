@@ -175,7 +175,7 @@ Question: Which sensitive file was likely targeted by actor(s)?
 
 ---
 
-### 🚩 6. Connectivity & Name Resolution Check
+### 🚩 6. Data Staging Activity Confirmation
 
 Objective: 
 Confirm that sensitive data was prepared for movement by staging into an export/archive output.
@@ -192,7 +192,7 @@ DeviceFileEvents
 | project Timestamp, DeviceName, InitiatingProcessAccountName, InitiatingProcessUniqueId, FileName, FolderPath, ActionType, InitiatingProcessFileName
 | order by Timestamp asc
 ```
-<img width="1829" height="562" alt="image" src="https://github.com/user-attachments/assets/f7541770-2420-4a03-9280-536f5a41667a" />
+<img width="814" height="87" alt="image" src="https://github.com/user-attachments/assets/5353b71f-58f5-421d-b74c-df3f960ca6a3" />
 
 Question: Identify the ID of the initiating unique process
 
