@@ -500,60 +500,61 @@ Question: Confirm whether an outbound connection was attempted and identify the 
 
 ---
 
-### 🚩 17. Outbound Transfer Attempt Timestamp
+### 🚩 17. Second Endpoint Scope Confirmation
 
 Objective: 
-Confirm an outbound transfer attempt occurred after staging activity.
+Identify the second endpoint involved in the chain based on similar telemetry patterns.
 
 What to Hunt: 
-Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+Process telemetry on the second device and confirm its device name for scoping.
 
 ```kql
-    //Looking for "explanatory" file creation. 
-DeviceFileEvents
-    //Time should be immediately after creating the scheduler event
-| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-| order by TimeGenerated asc
+DeviceNetworkEvents
+| where TimeGenerated >=(datetime(2025-12-03))
+| where ActionType == "ConnectionSuccess"
+| where InitiatingProcessRemoteSessionIP == "192.168.0.110"
+| summarize Connections=count(),
+          RemoteSessionNames=make_set(InitiatingProcessRemoteSessionDeviceName, 10)
+  by DeviceName
+| where DeviceName != "sys1-dept"
+| order by Connections desc
 ```
-<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+<img width="253" height="65" alt="image" src="https://github.com/user-attachments/assets/f349e72e-cdee-4d3c-8a67-4e67f4f1056b" />
 
-Question: Confirm whether an outbound connection was attempted and identify the timestamp
+Question: Identify the other compromised machine in question
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `2025-12-03T07:26:28.5959592Z`
+  Answer: `main1-srvr`
 </details>
 
 ---
 
-### 🚩 18. Outbound Transfer Attempt Timestamp
+### 🚩 18. Approved Bonus Artifact Access on Second Endpoint
 
 Objective: 
-Confirm an outbound transfer attempt occurred after staging activity.
+Confirm the approved bonus artifact is accessed again on the second endpoint.
 
 What to Hunt: 
-Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+Process evidence of file access to the approved artifact on the second device and capture the access timestamp.
 
 ```kql
-    //Looking for "explanatory" file creation. 
-DeviceFileEvents
-    //Time should be immediately after creating the scheduler event
-| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-| order by TimeGenerated asc
+DeviceEvents
+| where DeviceName == "main1-srvr"
+| where TimeGenerated >=(datetime(2025-12-03))
+| where FileName contains "BonusMatrix_Q4_Approved.xlsx"
+| take 5
+| project TimeGenerated, InitiatingProcessCreationTime, ActionType, AdditionalFields, DeviceName, FileName, FolderPath
 ```
-<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+<img width="681" height="56" alt="image" src="https://github.com/user-attachments/assets/4e6ba309-db3a-4e13-8485-e4a85f5020b5" />
 
-Question: Confirm whether an outbound connection was attempted and identify the timestamp
+Question: Identify the creation time of the initiating process tied to this particular activity
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `2025-12-03T07:26:28.5959592Z`
+  Answer: `2025-12-04T03:11:58.6027696Z`
 </details>
 
 ---
