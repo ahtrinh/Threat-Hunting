@@ -698,28 +698,28 @@ Question: Provide the IP of the outbound connection attempt
 
 | Flag | Description                        | Value |
 |------|------------------------------------|-------|
-| 1    |Determine which endpoint first shows activity tied to the user context involved in the chain.            | sys1-dept |
-| 2    | File related to Exploit            | DefenderTamperArtifact.lnk |
-| 3    | Exploit Command Value              | "powershell.exe" -NoProfile -Sta -Command "try { Get-Clipboard | Out-Null } catch { }" |
-| 4    | Last Recon Attempt                 | 2025-10-09T12:51:44.3425653Z |
-| 5    | 2nd Command tied to Mapping                | "cmd.exe" /c wmic logicaldisk get name,freespace,size |
-| 6    | Initiating Parent Process File Name                     | RuntimeBroker.exe |
-| 7    | Initiating Process Unique ID              | 2533274790397065 |
-| 8    | Process Inventory                     | tasklist.exe |
-| 9    | 1st attempt timestamp      | 2025-10-09T12:52:14.3135459Z |
-| 10   | 1st Outbound Destination          | www.msftconnecttest.com |
-| 11   | Artifact 1st full folder path            | C:\Users\Public\ReconArtifacts.zip |
-| 12   | Unusual outbound IP          | 100.29.147.161 |
-| 13   | Task Name Value               | SupportToolUpdater |
-| 14   | Registry Value Name                      | RemoteAssistUpdater |
-| 15   | Artifact left behind               | SupportChat_log.lnk |
-| 16   | Artifact left behind               | SupportChat_log.lnk |
-| 17   | Artifact left behind               | SupportChat_log.lnk |
-| 18   | Artifact left behind               | SupportChat_log.lnk |
-| 19   | Artifact left behind               | SupportChat_log.lnk |
-| 20   | Artifact left behind               | SupportChat_log.lnk |
-| 21   | Artifact left behind               | SupportChat_log.lnk |
-| 22   | Artifact left behind               | SupportChat_log.lnk |
+| 1    | Initial Endpoint Association         | sys1-dept |
+| 2    | Remote Session Source Attribution            | 192.168.0.110 |
+| 3    | Support Script Execution Confirmation            | "powershell.exe" -ExecutionPolicy Bypass -File C:\Users\5y51-D3p7\Downloads\PayrollSupportTool.ps1 |
+| 4    | System Reconnaissance Initiation                 | "whoami.exe" /all |
+| 5    | Sensitive Bonus-Related File Exposure                | BonusMatrix_Draft_v3.xlsx |
+| 6    | Data Staging Activity Confirmation                     | 2533274790396713 |
+| 7    | Outbound Connectivity Test             | 2025-12-03T06:27:31.1857946Z |
+| 8    | Registry-Based Persistence                    | HKEY_CURRENT_USER\S-1-5-21-805396643-3920266184-3816603331-500\SOFTWARE\Microsoft\Windows\CurrentVersion\Run |
+| 9    | Scheduled Task Persistence      | BonusReviewAssist |
+| 10   | Secondary Access to Employee Scorecard Artifact          | YE-HELPDESKTECH |
+| 11   | Bonus Matrix Activity by a New Remote Session Context            | YE-HRPLANNER |
+| 12   |  Performance Review Access Validation          | 2025-12-03T07:25:15.6288106Z |
+| 13   |  Approved/Final Bonus Artifact Access               | 2025-12-03T07:25:39.1653621Z |
+| 14   | Candidate Archive Creation Location                     | C:\Users\5y51-D3p7\Documents\Q4Candidate_Pack.zip |
+| 15   | Outbound Transfer Attempt Timestamp               | 2025-12-03T07:26:28.5959592Z |
+| 16   |Local Log Clearing Attempt Evidence               | "wevtutil.exe" cl Microsoft-Windows-PowerShell/Operational |
+| 17   | Second Endpoint Scope Confirmation               | main1-srvr |
+| 18   | Approved Bonus Artifact Access on Second Endpoint               | 2025-12-04T03:11:58.6027696Z |
+| 19   | Employee Scorecard Access on Second Endpoint               | YE-FINANCEREVIE |
+| 20   | Staging Directory Identification on Second Endpoint               | C:\Users\Main1-Srvr\Documents\InternalReferences\ArchiveBundles\YearEnd_ReviewPackage_2025.zip |
+| 21   |  Staging Activity Timing on Second Endpoint               |2025-12-04T03:15:29.2597235Z |
+| 22   |Outbound Connection Remote IP (Final Phase)               | 54.83.21.156 |
 
 ---
 
