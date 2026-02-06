@@ -269,30 +269,30 @@ Question: Provide the associated RegistryKey value
 
 ---
 
-### 🚩 9. Privilege Surface Check
+### 🚩 9. Scheduled Task Persistence
 
-Now the actor can discover what permissions and priviledges are available to them. We need to look for any telemetry that indicates queries of priviledge. We can search `DeviceProcessEvents` for anything like a `whoami`.
+Objective: 
+Confirm a scheduled task was created or used to automate recurring execution.
+
+What to Hunt: 
+Scheduled task creation/execution via command line, focusing on the task name used.
 
 ```kql
-   //looking for attempts to understand priviledges available
 DeviceProcessEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-15))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-| where ProcessCommandLine contains "whoami"
-| project TimeGenerated, DeviceName, FileName, FolderPath, ProcessCommandLine
-| order by TimeGenerated asc
-| take 1
+| where DeviceName == "sys1-dept"
+| where InitiatingProcessAccountName == "5y51-d3p7"
+| where TimeGenerated >= datetime(2025-12-01)
+| where ProcessCommandLine contains "/SC"
+|project TimeGenerated, InitiatingProcessAccountName, ProcessCommandLine, FileName, InitiatingProcessFileName
 ```
-<img width="1835" height="510" alt="image" src="https://github.com/user-attachments/assets/22c8ce83-1fef-474e-b1b7-30bc6852f86f" />
+<img width="802" height="115" alt="image" src="https://github.com/user-attachments/assets/7a4fd3e0-ca42-48c0-9e64-f2e7cdc4fc9b" />
 
-Question: Identify the timestamp of the very first attempt.
+Question: What was the Task Name value tied to this particular activity?
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `2025-10-09T12:52:14.3135459Z`
+  Answer: `BonusReviewAssist`
 </details>
 
 ---
