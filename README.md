@@ -78,33 +78,33 @@ Question: Provide the IP of the remote session accessing the system
 
 ---
 
-### 🚩 3. Quick Data Probe
+### 🚩 3. Support Script Execution Confirmation
 
-Okay, at this point, the actor would still be probing for information, most likely something quick to acquire that would also hold sensitive information. Perhaps where copying and pasting is made possible, the clip board. Let's discover if the actor ran any command to access the clipboard. We will search, including the values of `powershell` and `clip` for any sort of event.
+After confirming the remote session source tied to activity on the first endpoint, the next step is to validate whether the actor executed a support-themed PowerShell script from a user-accessible location. Scripts launched from user profile paths (especially `Downloads`) are a common indicator of hands-on execution versus standard administrative tooling.
+
+To confirm this, we review `DeviceProcessEvents` for PowerShell process creation and look for command lines that reference a script (`-File`) executed from the user profile directory.
 
 ```kql
-//looking for checks, actions that read data
 DeviceProcessEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-15))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //action
-| where FileName contains "powershell"
-    //hint offered
-| where ProcessCommandLine contains "clip"
-| project TimeGenerated, DeviceName, ActionType, FileName, FolderPath, ProcessCommandLine
+| where DeviceName == "sys1-dept"
+| where TimeGenerated between (datetime(2025-12-03) .. datetime(2025-12-08))
+| where FileName == "powershell.exe"
+| where ProcessCommandLine has "-File"
+| where ProcessCommandLine contains @"C:\Users\"
+| where ProcessCommandLine contains @"\Downloads\"
+| project TimeGenerated, DeviceName, AccountName, FileName, ProcessCommandLine,
+          InitiatingProcessFileName, InitiatingProcessCommandLine
 | order by TimeGenerated asc
 
 ```
-<img width="1826" height="480" alt="image" src="https://github.com/user-attachments/assets/9a4278b8-c675-441a-9df8-00617f3583d7" />
+<img width="778" height="127" alt="image" src="https://github.com/user-attachments/assets/3d6e87e9-2f25-42a4-98fd-621658e84861" />
 
-Question: Provide the command value tied to this particular exploit.
+Question: What was the command used to execute the program?
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `"powershell.exe" -NoProfile -Sta -Command "try { Get-Clipboard | Out-Null } catch { }"`
+  Answer: `"powershell.exe" -ExecutionPolicy Bypass -File C:\Users\5y51-D3p7\Downloads\PayrollSupportTool.ps1`
 </details>
 
 ---
