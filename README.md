@@ -30,23 +30,19 @@ To anchor the investigation, we begin by examining process execution telemetry o
 
 ```kql
 DeviceProcessEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-16))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //looking for unusual executions
-| where ProcessCommandLine contains "powershell"
-| project TimeGenerated, DeviceName, ProcessCommandLine
+| where TimeGenerated between (datetime(2025-12-01) .. datetime(2025-12-08))
+| where FileName contains "powershell"
+| project TimeGenerated, DeviceName, AccountName, ProcessCommandLine
 | order by TimeGenerated asc
 ```
-<img width="1820" height="390" alt="image" src="https://github.com/user-attachments/assets/84a0a9ff-120b-43da-be66-4d9de293f1f0" />
+<img width="390" height="68" alt="image" src="https://github.com/user-attachments/assets/779fe6b3-c894-4d5b-b5a5-53f0564cddcb" />
 
-Question: What was the first CLI parameter name used during the execution of the suspicious program?
+Question :Identify the DeviceName in question
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `-ExecutionPolicy`
+  Answer: `sys1-dept`
 </details>
 
 ---
