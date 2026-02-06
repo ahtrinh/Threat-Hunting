@@ -28,13 +28,14 @@ Participants must correlate endpoint telemetry across multiple user contexts and
 To establish a reliable starting point, we first need to identify where anomalous behavior begins. Based on the scenario context, suspicious activity is expected to occur during early December, coinciding with year-end compensation and performance review workflows.
 
 To anchor the investigation, we begin by examining process execution telemetry on employee-facing systems. By reviewing DeviceProcessEvents, we can identify abnormal script execution activity that may indicate unauthorized access or tooling usage.
+```
 DeviceProcessEvents
 | where TimeGenerated between (datetime(2025-12-01) .. datetime(2025-12-08))
 | where FileName contains "powershell"
 | project TimeGenerated, DeviceName, AccountName, ProcessCommandLine
 | order by TimeGenerated asc
 ```
-<img width="703" height="114" alt="image" src="https://github.com/user-attachments/assets/fe73a105-61af-49bd-97d1-c9a6f383082e" />
+<img width="703" height="114" alt="image" src="https://github.com/user-attachments/assets/f158c734-9590-4f1c-ad4c-b16a813f08db" />
 
 Question: Identify the most suspicious machine based on the given conditions
 
