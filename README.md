@@ -204,29 +204,33 @@ Question: Identify the ID of the initiating unique process
 
 ---
 
-### 🚩 7. Interactive Session Discovery
+### 🚩 7. Outbound Connectivity Test
 
-Did the actor detect user sessions on the host? Let's look for reveal attempts and signals that enumerate current session state without taking over the host. The reason the actor may do this is because knowing which sessions are active helps them decide whether to act immediately or wait. Let's search for `qwi` to see if any query sessions have been processed.
+Objective: 
+Confirm that outbound access was tested prior to any attempted transfer.
+
+What to Hunt: 
+A PowerShell-driven network connection to a benign external endpoint and determine the earliest reach attempt.
 
 ```kql
-    //looking for actions to detect sessions
-DeviceProcessEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-15))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //qwinsta command displays info on active user session
-| where ProcessCommandLine contains ("qwi")
-| project TimeGenerated, DeviceName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessUniqueId
+DeviceNetworkEvents
+| where DeviceName == "sys1-dept"
+| where InitiatingProcessAccountName == "5y51-d3p7"
+| where TimeGenerated >= datetime(2025-12-01)
+| where InitiatingProcessFileName in~ ("powershell.exe","pwsh.exe")
+| where isnotempty(RemoteIP)
+| where not(ipv4_is_private(RemoteIP))   // external only
+| order by TimeGenerated asc
+| project TimeGenerated, InitiatingProcessAccountName,ActionType, RemoteIP, RemotePort, Protocol, InitiatingProcessCommandLine
 ```
-<img width="1834" height="532" alt="image" src="https://github.com/user-attachments/assets/d67deef9-645f-461f-b894-4eea2ced8d25" />
+<img width="569" height="129" alt="image" src="https://github.com/user-attachments/assets/e5b765e0-65b1-4c2c-b014-7b4a913d7d88" />
 
-Question: What is the unique ID of the initiating process?
+Question: When was the first outbound connection attempt initiated?
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `2533274790397065`
+  Answer: `2025-12-03T06:27:31.1857946Z`
 </details>
 
 ---
