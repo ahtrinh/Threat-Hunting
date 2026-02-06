@@ -23,11 +23,12 @@ Participants must correlate endpoint telemetry across multiple user contexts and
 
 ---
 
-## Starting Point
+### 🚩 1. Initial Execution Detection
 
 To establish a reliable starting point, we first need to identify where anomalous behavior begins. Based on the scenario context, suspicious activity is expected to occur during early December, coinciding with year-end compensation and performance review workflows.
 
 To anchor the investigation, we begin by examining process execution telemetry on employee-facing systems. By reviewing DeviceProcessEvents, we can identify abnormal script execution activity that may indicate unauthorized access or tooling usage.
+
 ```
 DeviceProcessEvents
 | where TimeGenerated between (datetime(2025-12-01) .. datetime(2025-12-08))
@@ -37,39 +38,12 @@ DeviceProcessEvents
 ```
 <img width="703" height="114" alt="image" src="https://github.com/user-attachments/assets/f158c734-9590-4f1c-ad4c-b16a813f08db" />
 
-Question: Identify the most suspicious machine based on the given conditions
+Question: Identify the DeviceName in question 
 
 <details>
 <summary>Click to see answer</summary>
   
   Answer: `sys1-dept`
-</details>
-
----
-
-### 🚩 1. Initial Execution Detection
-
-Since we have established the most suspicious machine, we need to detect the earliest time it executed unusual code. Again, we use `DeviceProcessEvents` to discover that. This helps us anchor the timeline and follow the parent/child chain.
-
-```kql
-DeviceProcessEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-16))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //looking for unusual executions
-| where ProcessCommandLine contains "powershell"
-| project TimeGenerated, DeviceName, ProcessCommandLine
-| order by TimeGenerated asc
-```
-<img width="1820" height="390" alt="image" src="https://github.com/user-attachments/assets/84a0a9ff-120b-43da-be66-4d9de293f1f0" />
-
-Question: What was the first CLI parameter name used during the execution of the suspicious program?
-
-<details>
-<summary>Click to see answer</summary>
-  
-  Answer: `-ExecutionPolicy`
 </details>
 
 ---
