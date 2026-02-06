@@ -559,31 +559,29 @@ Question: Identify the creation time of the initiating process tied to this part
 
 ---
 
-### 🚩 19. Outbound Transfer Attempt Timestamp
+### 🚩 19. Employee Scorecard Access on Second Endpoint
 
 Objective: 
-Confirm an outbound transfer attempt occurred after staging activity.
+Confirm employee-related scorecard access occurs again on the second endpoint and identify the remote session device context.
 
 What to Hunt: 
-Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+Process activity showing access to the scorecard file and extract remote session device metadata.
 
 ```kql
-    //Looking for "explanatory" file creation. 
-DeviceFileEvents
-    //Time should be immediately after creating the scheduler event
-| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-| order by TimeGenerated asc
+DeviceEvents
+| where DeviceName == "main1-srvr"
+| where TimeGenerated >=(datetime(2025-12-01))
+| summarize Hits=count() by InitiatingProcessRemoteSessionDeviceName
+| order by Hits desc
 ```
-<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+<img width="269" height="92" alt="image" src="https://github.com/user-attachments/assets/0528767f-ced7-45e1-9624-072be2c1350e" />
 
-Question: Confirm whether an outbound connection was attempted and identify the timestamp
+Question: Provide the requested device name responsible for this activity
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `2025-12-03T07:26:28.5959592Z`
+  Answer: `YE-FINANCEREVIE`
 </details>
 
 ---
