@@ -656,60 +656,41 @@ Question: Now provide the timestamp when the staging activity occurred
 
 ---
 
-### 🚩 22. Outbound Transfer Attempt Timestamp
+### 🚩 22. Outbound Connection Remote IP (Final Phase)
 
 Objective: 
-Confirm an outbound transfer attempt occurred after staging activity.
+Identify the remote IP associated with the final outbound connection attempt.
 
 What to Hunt: 
-Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+Network telemetry for the relevant outbound destination and extract the remote IP field.
 
 ```kql
-    //Looking for "explanatory" file creation. 
-DeviceFileEvents
-    //Time should be immediately after creating the scheduler event
-| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-| order by TimeGenerated asc
+DeviceNetworkEvents
+| where DeviceName == "main1-srvr"
+| where TimeGenerated >= datetime(2025-12-03)
+| where ActionType in ("ConnectionSuccess", "ConnectionFailed")
+| where InitiatingProcessFileName == "powershell.exe"
+| where isnotempty(RemoteIP)
+| where RemoteIP !startswith "10."
+| where RemoteIP !startswith "192.168."
+| where RemoteIP !startswith "172."
+// remove common benign tooling / platform noise
+| where InitiatingProcessCommandLine !contains "raw.githubusercontent.com"
+| where InitiatingProcessCommandLine !contains "github.com"
+| where InitiatingProcessCommandLine !contains "Windows Defender Advanced Threat Protection"
+| where InitiatingProcessCommandLine !contains @"\Microsoft\Windows Defender Advanced Threat Protection\"
+| where InitiatingProcessCommandLine !contains "exfiltratedata.ps1"
+| project TimeGenerated, RemoteIP, RemotePort, ActionType, InitiatingProcessCommandLine
+| order by TimeGenerated desc
 ```
-<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+<img width="491" height="35" alt="image" src="https://github.com/user-attachments/assets/7e1e87c7-ff1d-4a4b-adaf-6b1c57071dc4" />
 
-Question: Confirm whether an outbound connection was attempted and identify the timestamp
+Question: Provide the IP of the outbound connection attempt
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `2025-12-03T07:26:28.5959592Z`
-</details>
-
----
-
-### 🚩 15. Outbound Transfer Attempt Timestamp
-
-Objective: 
-Confirm an outbound transfer attempt occurred after staging activity.
-
-What to Hunt: 
-Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
-
-```kql
-    //Looking for "explanatory" file creation. 
-DeviceFileEvents
-    //Time should be immediately after creating the scheduler event
-| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-| order by TimeGenerated asc
-```
-<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
-
-Question: Confirm whether an outbound connection was attempted and identify the timestamp
-
-<details>
-<summary>Click to see answer</summary>
-  
-  Answer: `2025-12-03T07:26:28.5959592Z`
+  Answer: `54.83.21.156`
 </details>
 
 ---
@@ -717,8 +698,7 @@ Question: Confirm whether an outbound connection was attempted and identify the 
 
 | Flag | Description                        | Value |
 |------|------------------------------------|-------|
-|Start | Suspicious Machine                 | gab-intern-vm |
-| 1    | 1st CLI parameter used in execution            | -ExecutionPolicy |
+| 1    |Determine which endpoint first shows activity tied to the user context involved in the chain.            | sys1-dept |
 | 2    | File related to Exploit            | DefenderTamperArtifact.lnk |
 | 3    | Exploit Command Value              | "powershell.exe" -NoProfile -Sta -Command "try { Get-Clipboard | Out-Null } catch { }" |
 | 4    | Last Recon Attempt                 | 2025-10-09T12:51:44.3425653Z |
@@ -733,8 +713,15 @@ Question: Confirm whether an outbound connection was attempted and identify the 
 | 13   | Task Name Value               | SupportToolUpdater |
 | 14   | Registry Value Name                      | RemoteAssistUpdater |
 | 15   | Artifact left behind               | SupportChat_log.lnk |
+| 16   | Artifact left behind               | SupportChat_log.lnk |
+| 17   | Artifact left behind               | SupportChat_log.lnk |
+| 18   | Artifact left behind               | SupportChat_log.lnk |
+| 19   | Artifact left behind               | SupportChat_log.lnk |
+| 20   | Artifact left behind               | SupportChat_log.lnk |
+| 21   | Artifact left behind               | SupportChat_log.lnk |
+| 22   | Artifact left behind               | SupportChat_log.lnk |
 
 ---
 
-**Report Completed By:** William Olega
-**Status:** ✅ All 15 flags investigated and confirmed
+**Report Completed By:** Alex Trinh
+**Status:** ✅ All 22 flags investigated and confirmed
