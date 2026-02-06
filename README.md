@@ -34,7 +34,7 @@ DeviceProcessEvents
 | project TimeGenerated, DeviceName, AccountName, ProcessCommandLine
 | order by TimeGenerated asc
 ```
-<img width="630" height="104" alt="Screenshot 2026-02-05 at 10 41 20 PM" src="https://github.com/user-attachments/assets/dbcee4f1-4808-47cd-a435-87b5458badcb" />
+<img width="620" height="118" alt="image" src="https://github.com/user-attachments/assets/022b3c62-e689-4bff-83d1-ef7f757eca11" />
 
 Question: Identify the most suspicious machine based on the given conditions
 
