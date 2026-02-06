@@ -328,32 +328,33 @@ Question: Identify the other remote session user that attempted to access employ
 
 ---
 
-### 🚩 11. Bundling / Staging Artifacts
+### 🚩 11. Bonus Matrix Activity by a New Remote Session Context
 
-We have now established that the actor has contacted an outbound destination. Now we need to look for any sort of consolidation of artifacts/data to a single location, as that indicates transfer and exfiltration. By using `DeviceFileEvents`, we can find zip files and others similar to it while we also keep the field of `InitiatingProcessParentFileName`.
+Objective: 
+Identify another remote session device name that is associated with higher level related activities later in the chain.
+
+What to Hunt: 
+File events related to bonus payout related artifacts and extract the remote session device metadata.
 
 ```kql
-   //Looking for File system events. Looking for consolidation of artifacts
-DeviceFileEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-09) .. datetime(2025-10-16))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //Executable file responsible for launching the current process
-| where InitiatingProcessParentFileName contains "runtimebroker.exe"
-    //hint offered
-| where FileName has_any ("zip")
-| project TimeGenerated, DeviceName, FileName, FolderPath, InitiatingProcessFileName
-| order by TimeGenerated asc
+DeviceNetworkEvents
+| where TimeGenerated >=(datetime(2025-12-03))
+| where DeviceName == "sys1-dept"
+| where ActionType == "ConnectionSuccess"
+| where isnotempty(InitiatingProcessRemoteSessionIP)
+| project TimeGenerated,
+          InitiatingProcessAccountName, InitiatingProcessFileName,
+          RemoteIP, InitiatingProcessRemoteSessionDeviceName, InitiatingProcessRemoteSessionIP
+| order by TimeGenerated desc
 ```
-<img width="1834" height="461" alt="image" src="https://github.com/user-attachments/assets/57d42d93-cca5-4752-a7df-e8f51f1af917" />
+<img width="920" height="125" alt="image" src="https://github.com/user-attachments/assets/b15d2789-acde-48c0-b542-e89a66d0c604" />
 
-Question: Provide the full folder path value where the artifact was first dropped into.
+Question: Identify the other remote session department that attempted to access sensitive payout files 
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `C:\Users\Public\ReconArtifacts.zip`
+  Answer: `YE-HRPLANNER`
 </details>
 
 ---
