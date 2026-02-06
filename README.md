@@ -586,31 +586,38 @@ Question: Provide the requested device name responsible for this activity
 
 ---
 
-### 🚩 20. Outbound Transfer Attempt Timestamp
+### 🚩 20. Staging Directory Identification on Second Endpoint
 
 Objective: 
-Confirm an outbound transfer attempt occurred after staging activity.
+Identify the directory used for consolidation of internal reference materials and archived content.
 
 What to Hunt: 
-Network events to a benign endpoint used for POST testing and extract the relevant timestamp.
+File events under the internal reference directory tree and determine the full directory structure involved.
 
 ```kql
-    //Looking for "explanatory" file creation. 
 DeviceFileEvents
-    //Time should be immediately after creating the scheduler event
-| where TimeGenerated > (todatetime('2025-10-09T13:01:29.7815532Z'))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
+| where DeviceName == "main1-srvr"
+| where TimeGenerated >=(datetime(2025-12-03))
+| where FileName != "VMAgentLogs.zip"
+| where FolderPath contains "Internal"
+| where FileName endswith ".zip"
+   or FileName endswith ".7z"
+   or FileName endswith ".rar"
+   or FileName endswith ".tar"
+   or FileName endswith ".gz"
+| project TimeGenerated, ActionType, FileName, FolderPath,
+          InitiatingProcessFileName,
+          InitiatingProcessRemoteSessionDeviceName
 | order by TimeGenerated asc
 ```
-<img width="413" height="15" alt="image" src="https://github.com/user-attachments/assets/858b67b3-2738-4a8a-a973-4526a32d1c39" />
+<img width="515" height="133" alt="image" src="https://github.com/user-attachments/assets/ae3f1cbe-19f0-44ec-85fa-576e959d7b09" />
 
-Question: Confirm whether an outbound connection was attempted and identify the timestamp
+Question: Provide the whole path containing the archived file
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `2025-12-03T07:26:28.5959592Z`
+  Answer: `C:\Users\Main1-Srvr\Documents\InternalReferences\ArchiveBundles\YearEnd_ReviewPackage_2025.zip`
 </details>
 
 ---
