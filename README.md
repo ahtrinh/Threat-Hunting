@@ -297,30 +297,33 @@ Question: What was the Task Name value tied to this particular activity?
 
 ---
 
-### 🚩 10. Proof-of-Access & Egress Validation
+### 🚩 10. Secondary Access to Employee Scorecard Artifact
 
-We also need to find evidence of outbound network checks, activity, and artifacts create as proof the actor can view or collect host data. We can look for any Network Events that stemmed from the `InitiatingProcessParentFileName`. That way we can trace if and when the actor contacts an outbound destination.
+Objective: 
+Identify evidence that a different remote session context accessed an employee-related scorecard file.
+
+What to Hunt: 
+File telemetry involving an employee scorecard artifact and determine which remote session device is associated.
 
 ```kql
-   //looking for actions that validate outbound reachability and attempt to capture host state
 DeviceNetworkEvents
-    //search the first half of October 2025
-| where TimeGenerated between (datetime(2025-10-01) .. datetime(2025-10-15))
-    //suspicious machine
-| where DeviceName == "gab-intern-vm"
-    //Initiating Parent File Name related to network events/outward connectivity probes
-| where InitiatingProcessParentFileName contains "runtimebroker.exe"
-| project TimeGenerated, ActionType, DeviceName, InitiatingProcessFileName, RemoteUrl
-| order by TimeGenerated asc
+| where TimeGenerated between (datetime(2025-12-03) .. datetime(2025-12-08))
+| where DeviceName == "sys1-dept"
+| where ActionType == "ConnectionSuccess"
+| where isnotempty(InitiatingProcessRemoteSessionIP)
+| project TimeGenerated, DeviceName,
+          InitiatingProcessAccountName, InitiatingProcessFileName,
+          RemoteIP, InitiatingProcessRemoteSessionDeviceName, InitiatingProcessRemoteSessionIP
+| order by TimeGenerated desc
 ```
-<img width="1834" height="515" alt="image" src="https://github.com/user-attachments/assets/4b2a4f3b-d678-4ba1-b97d-97e02e1bd950" />
+<img width="916" height="236" alt="image" src="https://github.com/user-attachments/assets/edf1e12f-08a0-4ea8-b813-0546dbb09edd" />
 
-Question: Which outbound destination was contacted first?
+Question: Identify the other remote session user that attempted to access employee related files
 
 <details>
 <summary>Click to see answer</summary>
   
-  Answer: `www.msftconnecttest.com`
+  Answer: `YE-HELPDESKTECH`
 </details>
 
 ---
